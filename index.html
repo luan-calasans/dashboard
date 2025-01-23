@@ -63,7 +63,7 @@
       margin-bottom: 15px;
     }
     .btn {
-      background: #007acc;
+      background: #eab832;
       color: #fff;
       border: none;
       border-radius: 4px;
@@ -75,13 +75,13 @@
       transition: background 0.2s ease;
     }
     .btn:hover {
-      background: #005fa3;
+      background: #eab80b;
     }
   </style>
 </head>
 <body>
   <header>
-    <h1>Meu Dashboard</h1>
+    <h1>Portfólio</h1>
     <p>Arquivos Power BI do repositório <strong>luan-calasans/dashboard</strong></p>
   </header>
 
@@ -115,10 +115,6 @@
           const title = document.createElement('h3');
           title.textContent = file.name;
           card.appendChild(title);
-
-          const filePath = document.createElement('p');
-          filePath.textContent = 'Caminho: ' + file.path;
-          card.appendChild(filePath);
 
           const downloadBtn = document.createElement('a');
           downloadBtn.className = 'btn';
