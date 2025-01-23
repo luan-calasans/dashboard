@@ -3,10 +3,14 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Dashboard - Power BI Files</title>
+  <title>Portfólio - Power BI Files</title>
+
+  <!-- Fonte Montserrat -->
   <link rel="preconnect" href="https://fonts.gstatic.com" />
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet" />
+
   <style>
+    /* Reset básico */
     * {
       margin: 0;
       padding: 0;
@@ -61,11 +65,13 @@
       font-size: 0.9rem;
       color: #666;
       margin-bottom: 15px;
+      word-wrap: break-word;
     }
     .btn {
       background: #eab832;
       color: #fff;
       border: none;
+      width: 100%;
       border-radius: 4px;
       padding: 10px 15px;
       text-decoration: none;
@@ -73,9 +79,15 @@
       text-align: center;
       cursor: pointer;
       transition: background 0.2s ease;
+      margin-inline: 2px; /* Espaço entre botões */
+      margin-block: 2px;
     }
     .btn:hover {
       background: #eab80b;
+    }
+    .buttons {
+      display: flex;
+      flex-wrap: wrap;
     }
   </style>
 </head>
@@ -85,11 +97,19 @@
     <p>Arquivos Power BI do repositório <strong>luan-calasans/dashboard</strong></p>
   </header>
 
-  <div class="container" id="files-container">
-  </div>
+  <div class="container" id="files-container"></div>
 
   <script>
     const repoUrl = 'https://api.github.com/repos/luan-calasans/dashboard/contents';
+
+    // Mapeamento: "nome do arquivo PBIX" -> "link público ou embed do Power BI Service"
+    const pbixToEmbedMap = {
+      "Competitive Marketing Analysis.pbix": "https://app.powerbi.com/view?r=YOUR_EMBED_LINK_1",
+      "Corporate Spend.pbix": "https://app.powerbi.com/view?r=YOUR_EMBED_LINK_2",
+      "Employee Hiring and History.pbix": "https://app.powerbi.com/view?r=YOUR_EMBED_LINK_3",
+      "Revenue Opportunities.pbix": "https://app.powerbi.com/view?r=YOUR_EMBED_LINK_3",
+      "Store Sales.pbix": "https://app.powerbi.com/view?r=YOUR_EMBED_LINK_3",
+    };
 
     const filesContainer = document.getElementById('files-container');
 
@@ -101,13 +121,17 @@
         }
         const data = await response.json();
 
-        const pbixFiles = data.filter(item => item.type === 'file' && item.name.toLowerCase().endsWith('.pbix'));
+        // Filtra somente arquivos .pbix
+        const pbixFiles = data.filter(item => 
+          item.type === 'file' && item.name.toLowerCase().endsWith('.pbix')
+        );
         
         if (pbixFiles.length === 0) {
           filesContainer.innerHTML = '<p>Nenhum arquivo .pbix encontrado no repositório.</p>';
           return;
         }
 
+        // Para cada arquivo .pbix encontrado
         pbixFiles.forEach(file => {
           const card = document.createElement('div');
           card.className = 'file-card';
@@ -116,13 +140,39 @@
           title.textContent = file.name;
           card.appendChild(title);
 
+          // Caminho do arquivo
+          const pathInfo = document.createElement('p');
+          pathInfo.textContent = 'Caminho: ' + file.path;
+          card.appendChild(pathInfo);
+
+          // Tamanho do arquivo (em KB)
+          const sizeInfo = document.createElement('p');
+          sizeInfo.textContent = 'Tamanho: ' + (file.size / 1024).toFixed(2) + ' KB';
+          card.appendChild(sizeInfo);
+
+          // Div que agrupa os botões
+          const buttonsDiv = document.createElement('div');
+          buttonsDiv.className = 'buttons';
+
+          // Botão "Baixar"
           const downloadBtn = document.createElement('a');
           downloadBtn.className = 'btn';
           downloadBtn.textContent = 'Baixar .pbix';
           downloadBtn.href = file.download_url; 
           downloadBtn.target = '_blank';
-          card.appendChild(downloadBtn);
+          buttonsDiv.appendChild(downloadBtn);
 
+          // Se tivermos um link de visualização no pbixToEmbedMap, criamos o botão "Visualizar"
+          if (pbixToEmbedMap[file.name]) {
+            const viewBtn = document.createElement('a');
+            viewBtn.className = 'btn';
+            viewBtn.textContent = 'Visualizar Online';
+            viewBtn.href = pbixToEmbedMap[file.name];
+            viewBtn.target = '_blank';
+            buttonsDiv.appendChild(viewBtn);
+          }
+
+          card.appendChild(buttonsDiv);
           filesContainer.appendChild(card);
         });
       } catch (error) {
